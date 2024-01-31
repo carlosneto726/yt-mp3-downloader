@@ -3,6 +3,7 @@ import json
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter.messagebox import showinfo
 from pytube import YouTube
 
 
@@ -29,8 +30,8 @@ class App:
 
 	def download(self, *args):
 		config = json.load(open('config.json'))
-		YouTube(self.url.get()).streams.filter(only_audio=True).first().download(output_path=config['save_path'])
-
+		yt = YouTube(self.url.get(), on_complete_callback=self.completed)
+		yt.streams.filter(only_audio=True).first().download(output_path=config['save_path'])
 
 	def setFolder(self, *args):
 		self.path = filedialog.askdirectory()
@@ -40,7 +41,10 @@ class App:
 
 	def setPath(self, path):
 		with open("config.json", "w") as outfile:
-			json.dump({"save_path": path}, outfile)
+			json.dump({"save_path": path}, outfile)	
+
+	def completed(self, *args):
+		showinfo(message='Download completed!')
 
 
 if __name__ == '__main__':
